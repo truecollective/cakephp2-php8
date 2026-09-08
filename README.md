@@ -1,3 +1,61 @@
+# cakephp2-php8 — True Photography copy
+
+This is True Photography's copy of [kamilwylegala/cakephp2-php8](https://github.com/kamilwylegala/cakephp2-php8),
+which is itself a fork of CakePHP 2.10.24 patched to run on PHP 8. It exists so the `truephoto`
+application can carry its own framework patches without waiting on upstream, which merges roughly
+once a year.
+
+It is a detached mirror, not a GitHub fork, so pull requests opened here default to this repository
+rather than upstream.
+
+## Branches
+
+| Branch | Purpose |
+|---|---|
+| `master` | Untouched mirror of upstream `master`. Never commit here. |
+| `truephoto` | Default branch. Our patches on top of `master`. |
+
+## Remotes
+
+```bash
+origin    git@github.com:truecollective/cakephp2-php8.git
+upstream  https://github.com/kamilwylegala/cakephp2-php8.git   # fetch only
+```
+
+Pulling in upstream changes:
+
+```bash
+git fetch upstream
+git switch master && git merge --ff-only upstream/master && git push origin master
+git switch truephoto && git merge master
+```
+
+## How the application consumes this
+
+`app/composer.json` in the `truephoto` repository:
+
+```json
+{
+	"require": {
+		"cakephp/cakephp": "dev-truephoto as 2.10.24"
+	},
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/truecollective/cakephp2-php8"
+		}
+	]
+}
+```
+
+There are no tags — `composer.lock` pins the exact commit, so builds stay reproducible while tracking
+a branch. The Installation section further down is upstream's and points at upstream's URL; use the
+snippet above instead.
+
+---
+
+Everything below is upstream's README, kept as-is for context.
+
 # Fork of CakePHP 2 with support for PHP8
 
 ~~For original README content please check original repository: https://github.com/cakephp/cakephp/tree/2.x~~
