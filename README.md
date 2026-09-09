@@ -66,7 +66,8 @@ make test
 ```
 
 `make test` runs `vendors/bin/phpunit` against `lib/Cake/Test/Case/AllTestsTest.php`, the same
-invocation CI uses. A single case is `docker compose exec web ./vendors/bin/phpunit --stderr
+invocation CI uses. The test app reports `E_ALL` and PHPUnit converts deprecations to exceptions, so
+a green run means the framework raised no deprecation on any path the suite reaches. A single case is `docker compose exec web ./vendors/bin/phpunit --stderr
 lib/Cake/Test/Case/I18n/I18nTest.php`.
 
 Do not use `cake test`. That path (`TestShell`, `CakeTestSuiteCommand`, `CakeTestRunner`) still
