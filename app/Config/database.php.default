@@ -64,6 +64,7 @@
  * flags =>
  * A key/value array of driver specific connection options.
  */
+#[\AllowDynamicProperties]
 class DATABASE_CONFIG {
 
 	public $default = array(

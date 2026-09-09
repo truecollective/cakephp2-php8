@@ -2151,7 +2151,6 @@ class DboSourceTest extends CakeTestCase {
 		$this->db->query('SELECT 2');
 
 		$property = new ReflectionProperty($this->db, '_queryCache');
-		$property->setAccessible(true);
 
 		$this->assertCount(2, $property->getValue($this->db));
 

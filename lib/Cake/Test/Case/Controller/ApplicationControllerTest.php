@@ -52,6 +52,13 @@ class TransSessionIdController extends AppController {
 class ApplicationControllerTest extends ControllerTestCase {
 
 /**
+ * Session config to restore after the test, since TransSessionIdController rewrites it.
+ *
+ * @var array
+ */
+	protected $_sessionConfig;
+
+/**
  * setupDown method
  *
  * @return void
@@ -59,6 +66,7 @@ class ApplicationControllerTest extends ControllerTestCase {
 	public function setUp() : void {
 		CakeSession::destroy();
 		parent::setUp();
+		$this->_sessionConfig = Configure::read('Session');
 	}
 
 /**
@@ -68,6 +76,7 @@ class ApplicationControllerTest extends ControllerTestCase {
  */
 	public function tearDown() : void {
 		CakeSession::destroy();
+		Configure::write('Session', $this->_sessionConfig);
 		parent::tearDown();
 	}
 
@@ -77,6 +86,7 @@ class ApplicationControllerTest extends ControllerTestCase {
  * @return void
  */
 	public function testRedirect() {
+		$this->skipIf(PHP_VERSION_ID >= 80500, 'Enabling session.use_trans_sid is deprecated since PHP 8.5.');
 		$sessionId = 'o7k64tlhil9pakp89j6d8ovlqk';
 		$this->testAction('/trans_session_id/next?CAKEPHP=' . $sessionId);
 		$this->assertStringContainsString('/trans_session_id/next_step?CAKEPHP=' . $sessionId, $this->headers['Location']);

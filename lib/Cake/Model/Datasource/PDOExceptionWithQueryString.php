@@ -4,6 +4,8 @@ class PDOExceptionWithQueryString extends PDOException {
 
 	public string $queryString = "";
 
+	public array $params = array();
+
 /**
  * Wrapper for PDOException to avoid creating dynamic property.
  *

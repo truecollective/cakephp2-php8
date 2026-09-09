@@ -109,7 +109,7 @@ class Security {
 		if (empty($type)) {
 			$type = static::$hashType;
 		}
-		$type = strtolower($type);
+		$type = strtolower((string)$type);
 
 		if ($type === 'blowfish') {
 			return static::_crypt($string, $salt);
@@ -126,10 +126,6 @@ class Security {
 				return sha1($string);
 			}
 			$type = 'sha256';
-		}
-
-		if ($type === 'sha256' && function_exists('mhash')) {
-			return bin2hex(mhash(MHASH_SHA256, $string));
 		}
 
 		if (function_exists('hash')) {
@@ -223,7 +219,8 @@ class Security {
 			return '';
 		}
 
-		srand((int)(float)Configure::read('Security.cipherSeed'));
+		$text = (string)$text;
+		srand(static::_cipherSeed());
 		$out = '';
 		$keyLength = strlen($key);
 		for ($i = 0, $textLength = strlen($text); $i < $textLength; $i++) {
@@ -236,6 +233,29 @@ class Security {
 		}
 		srand();
 		return $out;
+	}
+
+/**
+ * Returns Security.cipherSeed as an int, reproducing the pre-PHP 8.5 wrap-around for out-of-range
+ * values so data ciphered under the old cast still decrypts.
+ *
+ * @return int
+ */
+	protected static function _cipherSeed() {
+		$seed = (float)Configure::read('Security.cipherSeed');
+		if (!is_finite($seed)) {
+			return 0;
+		}
+		$intMax = 2 ** 63;
+		if ($seed >= $intMax || $seed < -$intMax) {
+			$seed = fmod($seed, 2 ** 64);
+			if ($seed >= $intMax) {
+				$seed -= 2 ** 64;
+			} elseif ($seed < -$intMax) {
+				$seed += 2 ** 64;
+			}
+		}
+		return (int)$seed;
 	}
 
 /**

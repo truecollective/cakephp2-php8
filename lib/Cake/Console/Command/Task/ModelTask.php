@@ -429,8 +429,9 @@ class ModelTask extends BakeTask {
 				for ($i = 1, $m = $defaultChoice / 2; $i <= $m; $i++) {
 					$line = sprintf("%2d. %s", $i, $this->_validations[$i]);
 					$optionText .= $line . str_repeat(" ", 31 - strlen($line));
+					$index = (int)($m + $i);
 					if ($m + $i !== $defaultChoice) {
-						$optionText .= sprintf("%2d. %s\n", $m + $i, $this->_validations[$m + $i]);
+						$optionText .= sprintf("%2d. %s\n", $index, $this->_validations[$index]);
 					}
 				}
 				$this->out($optionText);
@@ -710,7 +711,7 @@ class ModelTask extends BakeTask {
 					$prompt = "{$model->name} {$type} {$assoc['alias']}?";
 					$response = $this->in($prompt, array('y', 'n'), 'y');
 
-					if (strtolower($response) === 'n') {
+					if (strtolower((string)$response) === 'n') {
 						unset($associations[$type][$i]);
 					} elseif ($type === 'hasMany') {
 						unset($associations['hasOne'][$i]);

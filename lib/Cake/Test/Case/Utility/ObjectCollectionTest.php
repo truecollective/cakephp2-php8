@@ -23,6 +23,20 @@ App::uses('CakeEvent', 'Event');
  * A generic object class
  */
 class GenericObject {
+/**
+ * The owning collection.
+ *
+ * @var GenericObjectCollection
+ */
+	protected $_Collection;
+
+/**
+ * Settings for this object.
+ *
+ * @var array
+ */
+	public $settings = array();
+
 
 /**
  * Constructor

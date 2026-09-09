@@ -862,7 +862,7 @@ class ExceptionRendererTest extends CakeTestCase {
  * @return void
  */
 	public function testPDOException() {
-		$exception = new PDOException('There was an error in the SQL query');
+		$exception = new PDOExceptionWithQueryString(new PDOException('There was an error in the SQL query'));
 		$exception->queryString = 'SELECT * from poo_query < 5 and :seven';
 		$exception->params = array('seven' => 7);
 		$ExceptionRenderer = new ExceptionRenderer($exception);

@@ -679,24 +679,24 @@ class MysqlTest extends CakeTestCase {
 				'id' => array('type' => 'integer', 'null' => false, 'default' => 0),
 				'name' => array('type' => 'string', 'null' => false, 'length' => 50),
 				'tableParameters' => array(
-					'charset' => 'utf8',
-					'collate' => 'utf8_general_ci',
+					'charset' => 'utf8mb4',
+					'collate' => 'utf8mb4_general_ci',
 					'engine' => 'InnoDB',
 					'comment' => 'Newly table added comment.',
 				)
 			)
 		));
 		$result = $this->Dbo->alterSchema($schemaB->compare($schemaA));
-		$this->assertStringContainsString('DEFAULT CHARSET=utf8', $result);
+		$this->assertStringContainsString('DEFAULT CHARSET=utf8mb4', $result);
 		$this->assertStringContainsString('ENGINE=InnoDB', $result);
-		$this->assertStringContainsString('COLLATE=utf8_general_ci', $result);
+		$this->assertStringContainsString('COLLATE=utf8mb4_general_ci', $result);
 		$this->assertStringContainsString('COMMENT=\'Newly table added comment.\'', $result);
 
 		$this->Dbo->rawQuery($result);
 		$result = $this->Dbo->listDetailedSources($this->Dbo->fullTableName('altertest', false, false));
-		$this->assertEquals('utf8_general_ci', $result['Collation']);
+		$this->assertEquals('utf8mb4_general_ci', $result['Collation']);
 		$this->assertEquals('InnoDB', $result['Engine']);
-		$this->assertEquals('utf8', $result['charset']);
+		$this->assertEquals('utf8mb4', $result['charset']);
 
 		$this->Dbo->rawQuery($this->Dbo->dropSchema($schemaA));
 	}
@@ -744,12 +744,12 @@ class MysqlTest extends CakeTestCase {
 		$this->Dbo->cacheSources = $this->Dbo->testing = false;
 		$tableName = 'tinyint_' . uniqid();
 		$table = $this->Dbo->fullTableName($tableName);
-		$this->Dbo->rawQuery('CREATE TABLE ' . $table . ' (id int(11) AUTO_INCREMENT, bool tinyint(1), small_int tinyint(2), primary key(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
+		$this->Dbo->rawQuery('CREATE TABLE ' . $table . ' (id int(11) AUTO_INCREMENT, bool tinyint(1), small_int tinyint(2), primary key(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;');
 		$result = $this->Dbo->readTableParameters($this->Dbo->fullTableName($tableName, false, false));
 		$this->Dbo->rawQuery('DROP TABLE ' . $table);
 		$expected = array(
-			'charset' => 'utf8',
-			'collate' => 'utf8_unicode_ci',
+			'charset' => 'utf8mb4',
+			'collate' => 'utf8mb4_unicode_ci',
 			'engine' => 'InnoDB');
 		$this->assertEquals($expected, $result);
 
@@ -792,8 +792,8 @@ class MysqlTest extends CakeTestCase {
  */
 	public function testGetCharsetName() {
 		$this->Dbo->cacheSources = $this->Dbo->testing = false;
-		$result = $this->Dbo->getCharsetName('utf8_unicode_ci');
-		$this->assertEquals('utf8', $result);
+		$result = $this->Dbo->getCharsetName('utf8mb4_unicode_ci');
+		$this->assertEquals('utf8mb4', $result);
 		$result = $this->Dbo->getCharsetName('cp1250_general_ci');
 		$this->assertEquals('cp1250', $result);
 	}

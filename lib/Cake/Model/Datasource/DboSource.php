@@ -3068,13 +3068,33 @@ class DboSource extends DataSource {
 			$rt = ' LIMIT';
 
 			if ($offset) {
-				$rt .= sprintf(' %u,', $offset);
+				$rt .= sprintf(' %u,', $this->_clampLimitValue($offset));
 			}
 
-			$rt .= sprintf(' %u', $limit);
+			$rt .= sprintf(' %u', $this->_clampLimitValue($limit));
 			return $rt;
 		}
 		return null;
+	}
+
+/**
+ * Clamps a float limit or offset into the integer range; arithmetic on huge page numbers
+ * overflows to float, which sprintf('%u') can no longer convert.
+ *
+ * @param mixed $value Limit or offset value
+ * @return mixed
+ */
+	protected function _clampLimitValue($value) {
+		if (!is_float($value)) {
+			return $value;
+		}
+		if ($value >= PHP_INT_MAX) {
+			return PHP_INT_MAX;
+		}
+		if ($value <= PHP_INT_MIN) {
+			return PHP_INT_MIN;
+		}
+		return (int)$value;
 	}
 
 /**

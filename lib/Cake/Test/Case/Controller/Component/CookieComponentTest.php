@@ -18,6 +18,7 @@
 
 App::uses('Component', 'Controller');
 App::uses('Controller', 'Controller');
+App::uses('CakeRequest', 'Network');
 App::uses('CookieComponent', 'Controller/Component');
 
 /**
@@ -159,6 +160,7 @@ class CookieComponentTest extends CakeTestCase {
  * @return void
  */
 	public function testReadCorruptedCookieData() {
+		$this->skipIf(!extension_loaded('mcrypt'), 'No Mcrypt, skipping.');
 		$this->Cookie->type('aes');
 		$this->Cookie->key = sha1('some bad key');
 
@@ -507,6 +509,7 @@ class CookieComponentTest extends CakeTestCase {
  * @return void
  */
 	public function testDeleteCorruptedCookieData() {
+		$this->skipIf(!extension_loaded('mcrypt'), 'No Mcrypt, skipping.');
 		$this->Cookie->type('aes');
 		$this->Cookie->key = sha1('some bad key');
 
