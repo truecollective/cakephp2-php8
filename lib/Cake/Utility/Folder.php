@@ -493,6 +493,12 @@ class Folder {
 		if (!$path) {
 			$path = $this->path;
 		}
+		if (!$path) {
+			if ($type === null) {
+				return array(array(), array());
+			}
+			return array();
+		}
 		$files = array();
 		$directories = array($path);
 

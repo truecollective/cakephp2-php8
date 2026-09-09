@@ -540,6 +540,29 @@ class FolderTest extends CakeTestCase {
 	}
 
 /**
+ * A Folder whose directory does not exist has no path; tree() must report it empty, not throw.
+ *
+ * Run with E_DEPRECATED masked, as the application does: the null path then reaches the iterator
+ * as '' and PHP 8 throws ValueError, which is not an Exception. With E_DEPRECATED converted to an
+ * exception the bug is invisible, because the converted deprecation is caught by tree() itself.
+ *
+ * @return void
+ */
+	public function testFolderTreeNonExistentDirectory() {
+		$Folder = new Folder(TMP . 'folder_tree_non_existent');
+		$this->assertNull($Folder->pwd());
+
+		$level = error_reporting(E_ALL & ~E_DEPRECATED);
+		try {
+			$this->assertSame(array(array(), array()), $Folder->tree());
+			$this->assertSame(array(), $Folder->tree(null, false, 'files'));
+			$this->assertSame(array(), $Folder->tree(null, false, 'dir'));
+		} finally {
+			error_reporting($level);
+		}
+	}
+
+/**
  * testFolderTreeWithHiddenFiles method
  *
  * @return void
