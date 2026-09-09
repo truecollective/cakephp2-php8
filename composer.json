@@ -42,6 +42,6 @@
 		"check": [
 			"@test"
 		],
-		"test": "./lib/Cake/Console/cake test core AllTests --stderr --verbose"
+		"test": "./vendors/bin/phpunit --stderr --verbose lib/Cake/Test/Case/AllTestsTest.php"
 	}
 }

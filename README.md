@@ -52,6 +52,30 @@ There are no tags — `composer.lock` pins the exact commit, so builds stay repr
 a branch. The Installation section further down is upstream's and points at upstream's URL; use the
 snippet above instead.
 
+## Running the framework tests
+
+The Docker setup and CI workflow are trimmed to what the application runs on: PHP 8.5 and
+MariaDB 10.11. Upstream's Postgres, Sqlite, memcached, redis and APCu rows are gone; their tests
+skip themselves.
+
+```bash
+docker compose up -d --build          # PHP_VERSION=8.1 docker compose up -d --build to compare with upstream
+docker compose exec web composer install
+cp .github/workflows/configs/database.php app/Config/
+make test
+```
+
+`make test` runs `vendors/bin/phpunit` against `lib/Cake/Test/Case/AllTestsTest.php`, the same
+invocation CI uses. A single case is `docker compose exec web ./vendors/bin/phpunit --stderr
+lib/Cake/Test/Case/I18n/I18nTest.php`.
+
+Do not use `cake test`. That path (`TestShell`, `CakeTestSuiteCommand`, `CakeTestRunner`) still
+extends PHPUnit 5 class names and fatals under PHPUnit 9; `TestShellTest` skips itself for the same
+reason. `composer test` is repointed at the phpunit invocation above.
+
+`database.php` reads `DB_HOST` when set, which `docker-compose.yml` points at the `mariadb` service,
+so the same file serves CI (127.0.0.1) and the container.
+
 ---
 
 Everything below is upstream's README, kept as-is for context.

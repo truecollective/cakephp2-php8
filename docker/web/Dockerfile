@@ -1,15 +1,11 @@
-FROM php:8.2-apache
+ARG PHP_VERSION=8.5
+FROM php:${PHP_VERSION}-apache
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    && apt-get install -y libpq-dev libzip-dev unzip openssl libmcrypt-dev libmemcached-dev locales \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libicu-dev libzip-dev unzip locales \
     && rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-install pdo_mysql pdo_pgsql zip \
-    && pecl install apcu redis memcached mcrypt xdebug \
-    && docker-php-ext-enable redis memcached mcrypt \
-    && docker-php-ext-enable xdebug \
-    && echo "extension=apcu.so" >> /usr/local/etc/php/php.ini \
-    && echo "apc.enable_cli = 1" >> /usr/local/etc/php/php.ini
+RUN docker-php-ext-install pdo_mysql intl zip
 
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 
