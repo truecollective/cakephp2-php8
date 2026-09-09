@@ -103,11 +103,11 @@ class Xml {
 
 		if (is_array($input) || is_object($input)) {
 			return static::fromArray((array)$input, $options);
-		} elseif (strpos($input, '<') !== false) {
+		} elseif (is_string($input) && strpos($input, '<') !== false) {
 			return static::_loadXml($input, $options);
-		} elseif ($options['readFile'] && file_exists($input)) {
+		} elseif (is_string($input) && $options['readFile'] && file_exists($input)) {
 			return static::_loadXml(file_get_contents($input), $options);
-		} elseif ($options['readFile'] && strpos($input, 'http://') === 0 || strpos($input, 'https://') === 0) {
+		} elseif (is_string($input) && ($options['readFile'] && strpos($input, 'http://') === 0 || strpos($input, 'https://') === 0)) {
 			try {
 				$socket = new HttpSocket(array('request' => array('redirect' => 10)));
 				$response = $socket->get($input);
@@ -133,11 +133,7 @@ class Xml {
  * @throws XmlException
  */
 	protected static function _loadXml($input, $options) {
-		$hasDisable = function_exists('libxml_disable_entity_loader');
 		$internalErrors = libxml_use_internal_errors(true);
-		if ($hasDisable && !$options['loadEntities']) {
-			libxml_disable_entity_loader(true);
-		}
 		$flags = LIBXML_NOCDATA;
 		if (!empty($options['parseHuge'])) {
 			$flags |= LIBXML_PARSEHUGE;
@@ -151,9 +147,6 @@ class Xml {
 			}
 		} catch (Exception $e) {
 			$xml = null;
-		}
-		if ($hasDisable && !$options['loadEntities']) {
-			libxml_disable_entity_loader(false);
 		}
 		libxml_use_internal_errors($internalErrors);
 		if ($xml === null) {
@@ -221,7 +214,7 @@ class Xml {
 		);
 		$options += $defaults;
 
-		$dom = new DOMDocument($options['version'], $options['encoding']);
+		$dom = new DOMDocument((string)$options['version'], (string)$options['encoding']);
 		if ($options['pretty']) {
 			$dom->formatOutput = true;
 		}

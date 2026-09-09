@@ -44,6 +44,13 @@ class DispatcherMockCakeResponse extends CakeResponse {
  * @package       Cake.Test.Case.Routing
  */
 class TestDispatcher extends Dispatcher {
+/**
+ * Base path override used by the tests.
+ *
+ * @var mixed
+ */
+	public $base = null;
+
 
 /**
  * Controller instance, made publicly available for testing

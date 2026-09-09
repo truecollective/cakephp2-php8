@@ -197,6 +197,9 @@ class I18n {
 	) {
 		$_this = I18n::getInstance();
 
+		if ($context === null) {
+			$context = '';
+		}
 		if (strpos($singular, "\r\n") !== false) {
 			$singular = str_replace("\r\n", "\n", $singular);
 		}
@@ -379,6 +382,9 @@ class I18n {
 		$this->_noLocale = true;
 		$core = true;
 		$merge = array();
+		if (empty($this->_domains[$domain][$this->_lang])) {
+			$this->_domains[$domain][$this->_lang] = array();
+		}
 		$searchPaths = App::path('locales');
 		$plugins = CakePlugin::loaded();
 
@@ -437,13 +443,7 @@ class I18n {
 				}
 
 				if ($translations !== false) {
-					if ($this->_domains[$domain][$this->_lang] === false) {
-						$this->_domains[$domain][$this->_lang] = [
-							$this->category => $translations
-						];
-					} else {
-						$this->_domains[$domain][$this->_lang][$this->category] = $translations;
-					}
+					$this->_domains[$domain][$this->_lang][$this->category] = $translations;
 					$this->_noLocale = false;
 					break 2;
 				}
@@ -451,13 +451,7 @@ class I18n {
 		}
 
 		if (empty($this->_domains[$domain][$this->_lang][$this->category])) {
-			if ($this->_domains[$domain][$this->_lang] === false) {
-				$this->_domains[$domain][$this->_lang] = [
-					$this->category => []
-				];
-			} else {
-				$this->_domains[$domain][$this->_lang][$this->category] = [];
-			}
+			$this->_domains[$domain][$this->_lang][$this->category] = [];
 			return $domain;
 		}
 
@@ -477,8 +471,8 @@ class I18n {
 			}
 			$this->_domains = Hash::mergeDiff($this->_domains, $merge);
 
-			if (isset($this->_domains[$domain][$this->_lang][$this->category][null])) {
-				unset($this->_domains[$domain][$this->_lang][$this->category][null]);
+			if (isset($this->_domains[$domain][$this->_lang][$this->category][""])) {
+				unset($this->_domains[$domain][$this->_lang][$this->category][""]);
 			}
 		}
 
@@ -508,7 +502,7 @@ class I18n {
 					$r = unpack("L1len/L1offs", substr($data, $o_msg + $n * 8, 8));
 					$msgid = substr($data, $r["offs"], $r["len"]);
 					unset($msgid_plural);
-					$context = null;
+					$context = '';
 
 					if (strpos($msgid, "\x04") !== false) {
 						list($context, $msgid) = explode("\x04", $msgid);
@@ -554,14 +548,14 @@ class I18n {
 		$type = 0;
 		$translations = array();
 		$translationKey = '';
-		$translationContext = null;
+		$translationContext = '';
 		$plural = 0;
 		$header = '';
 
 		do {
 			$line = trim(fgets($file));
 			if ($line === '' || $line[0] === '#') {
-				$translationContext = null;
+				$translationContext = '';
 
 				continue;
 			}
@@ -610,7 +604,7 @@ class I18n {
 				unset($translations[$translationKey][$translationContext]);
 				$type = 0;
 				$translationKey = '';
-				$translationContext = null;
+				$translationContext = '';
 				$plural = 0;
 			}
 		} while (!feof($file));

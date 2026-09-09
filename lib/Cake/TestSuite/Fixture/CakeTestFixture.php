@@ -91,6 +91,20 @@ class CakeTestFixture {
 	public $canUseMemory = true;
 
 /**
+ * Schema object used to build the fixture table.
+ *
+ * @var CakeSchema
+ */
+	public $Schema = null;
+
+/**
+ * Import settings; when set the table definition or records are read from an existing table or model.
+ *
+ * @var array
+ */
+	public $import = null;
+
+/**
  * Instantiate the fixture.
  *
  * @throws CakeException on invalid datasource usage.
@@ -164,7 +178,7 @@ class CakeTestFixture {
 				ClassRegistry::flush();
 			}
 
-			if (!empty($db->config['prefix']) && strpos($this->table, $db->config['prefix']) === 0) {
+			if (!empty($db->config['prefix']) && strpos((string)$this->table, $db->config['prefix']) === 0) {
 				$this->table = str_replace($db->config['prefix'], '', $this->table);
 			}
 

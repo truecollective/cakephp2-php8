@@ -30,6 +30,13 @@ App::uses('CakeEvent', 'Event');
  * @package       Cake.TestSuite
  */
 class ControllerTestDispatcher extends Dispatcher {
+/**
+ * The response object used for the dispatched request.
+ *
+ * @var CakeResponse
+ */
+	public $response = null;
+
 
 /**
  * The controller to use in the dispatch process

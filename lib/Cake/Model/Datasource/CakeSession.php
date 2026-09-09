@@ -202,7 +202,7 @@ class CakeSession {
  */
 	protected static function _setHost($host) {
 		static::$host = $host;
-		if (strpos(static::$host, ':') !== false) {
+		if (strpos((string)static::$host, ':') !== false) {
 			static::$host = substr(static::$host, 0, strpos(static::$host, ':'));
 		}
 	}
@@ -250,7 +250,7 @@ class CakeSession {
 		if (!static::_hasSession() || !static::start()) {
 			return false;
 		}
-		if (isset($_SESSION[$name])) {
+		if ($name !== null && isset($_SESSION[$name])) {
 			return true;
 		}
 

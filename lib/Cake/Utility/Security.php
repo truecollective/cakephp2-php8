@@ -109,7 +109,7 @@ class Security {
 		if (empty($type)) {
 			$type = static::$hashType;
 		}
-		$type = strtolower($type);
+		$type = strtolower((string)$type);
 
 		if ($type === 'blowfish') {
 			return static::_crypt($string, $salt);
@@ -126,10 +126,6 @@ class Security {
 				return sha1($string);
 			}
 			$type = 'sha256';
-		}
-
-		if ($type === 'sha256' && function_exists('mhash')) {
-			return bin2hex(mhash(MHASH_SHA256, $string));
 		}
 
 		if (function_exists('hash')) {
@@ -223,6 +219,7 @@ class Security {
 			return '';
 		}
 
+		$text = (string)$text;
 		srand(static::_cipherSeed());
 		$out = '';
 		$keyLength = strlen($key);

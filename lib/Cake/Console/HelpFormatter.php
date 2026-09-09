@@ -45,6 +45,13 @@ class HelpFormatter {
 	protected $_maxOptions = 6;
 
 /**
+ * The parser being formatted.
+ *
+ * @var ConsoleOptionParser
+ */
+	protected $_parser;
+
+/**
  * Build the help formatter for an OptionParser
  *
  * @param ConsoleOptionParser $parser The option parser help is being generated for.
