@@ -3,6 +3,7 @@
 		 xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
 		 bootstrap="lib/Cake/Test/bootstrap.php"
 		 backupGlobals="true"
+		 convertDeprecationsToExceptions="true"
 		 colors="true">
 	<php>
 		<ini name="memory_limit" value="-1"/>
