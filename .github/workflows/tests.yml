@@ -3,7 +3,7 @@ name: Tests
 on:
   push:
     branches:
-      - 'master'
+      - 'truephoto'
   pull_request:
     branches:
       - '*'
@@ -19,83 +19,44 @@ jobs:
       fail-fast: false
       matrix:
         php-version:
-          - '8.0'
-        db-type:
-          - mysql
-        include:
-          - php-version: '8.0'
-            db-type: pgsql
-          - php-version: '8.0'
-            db-type: sqlite
-          - php-version: '8.1'
-            db-type: mysql
+          - '8.5'
 
     services:
-      mysql:
-        image: mysql:5.6
+      mariadb:
+        image: mariadb:10.11
         env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: cakephp_test
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: cakephp_test
         ports:
           - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-      postgres:
-        image: postgres:9.4
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: cakephp_test
-        ports:
-          - 5432:5432
-        options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=5
-      redis:
-        image: redis
-        ports:
-          - 6379:6379
-      memcached:
-        image: memcached
-        ports:
-          - 11211:11211
-
-    env:
-      DB: ${{ matrix.db-type }}
+        options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=10s --health-timeout=5s --health-retries=5
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install PHP with extensions
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: apcu, memcache, memcached, redis, mcrypt, pdo_mysql, pdo_pgsql, pdo_sqlite
+          extensions: intl, mbstring, pdo_mysql, zip
           ini-values: |
             assert.exception=1,
             zend.assertions=1,
             error_reporting=-1,
             log_errors_max_len=0,
-            display_errors=On,
-            apc.enable_cli=1
+            display_errors=On
           tools: composer
-
-      - name: Enable Autoload
-        run: echo "require_once dirname(__DIR__, 2) . DS . 'vendors/autoload.php';" >> app/Config/bootstrap.php
 
       - name: locale-gen
         run: |
           sudo locale-gen de_DE;
           sudo locale-gen es_ES;
 
-      - name: Create Another Databases for MySQL
-        if: matrix.db-type == 'mysql'
+      - name: Create additional databases
         run: |
           env MYSQL_PWD=root mysql -h 127.0.0.1 -u root -e 'CREATE DATABASE cakephp_test2;';
           env MYSQL_PWD=root mysql -h 127.0.0.1 -u root -e 'CREATE DATABASE cakephp_test3;';
-
-      - name: Create Another Databases for PostgreSQL
-        if: matrix.db-type == 'pgsql'
-        run: |
-          env PGPASSWORD=postgres psql -c 'CREATE SCHEMA test2;' -h 127.0.0.1 -U postgres -d cakephp_test;
-          env PGPASSWORD=postgres psql -c 'CREATE SCHEMA test3;' -h 127.0.0.1 -U postgres -d cakephp_test;
 
       - name: Make temporary directories writable
         run: chmod -R 777 ./app/tmp
@@ -105,7 +66,7 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache Composer
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-php${{ matrix.php-version }}-composer-${{ hashFiles('**/composer.json') }}

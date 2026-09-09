@@ -22,6 +22,13 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
+// Composer dev dependencies (PHPUnit, strftime shim, intl polyfill) for running the framework's own tests.
+$composerAutoload = dirname(__DIR__, 2) . DS . 'vendors' . DS . 'autoload.php';
+if (file_exists($composerAutoload)) {
+	require_once $composerAutoload;
+}
+unset($composerAutoload);
+
 // Setup a 'default' cache configuration for use in the application.
 Cache::config('default', array('engine' => 'File'));
 
