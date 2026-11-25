@@ -37,20 +37,41 @@ git switch truephoto && git merge master
 ```json
 {
 	"require": {
-		"cakephp/cakephp": "dev-truephoto as 2.10.24"
+		"cakephp/cakephp": "^2.10.24"
 	},
 	"repositories": [
 		{
 			"type": "vcs",
-			"url": "https://github.com/truecollective/cakephp2-php8"
+			"url": "https://github.com/truecollective/cakephp2-php8",
+			"no-api": true
 		}
 	]
 }
 ```
 
-There are no tags — `composer.lock` pins the exact commit, so builds stay reproducible while tracking
-a branch. The Installation section further down is upstream's and points at upstream's URL; use the
-snippet above instead.
+The `vcs` repository is canonical, so Packagist's `cakephp/cakephp` releases are never considered.
+Keep `"no-api": true`: without it, a failed or rate-limited GitHub API call makes Composer fall back
+to cloning over SSH, and the build dies with `Host key verification failed`.
+
+The Installation section further down is upstream's and points at upstream's URL; use the snippet
+above instead.
+
+## Releases
+
+Releases are tagged on `truephoto` after a patch is merged, as `2.10.24.N`: the upstream base
+followed by a counter of our releases, starting at `2.10.24.1`. Tags have no `v` prefix. Composer
+reads four-part numeric versions as stable releases but silently ignores tags with a custom suffix
+such as `-tp1`, so the scheme has none. `lib/Cake/VERSION.txt` stays at the CakePHP base.
+
+To release:
+
+```bash
+git switch truephoto && git pull
+git tag 2.10.24.N && git push origin 2.10.24.N
+```
+
+Then in the application, run `composer update cakephp/cakephp` and commit `composer.lock`. Pulling in
+upstream changes ends the same way, with a new tag on the merge.
 
 ## Running the framework tests
 
